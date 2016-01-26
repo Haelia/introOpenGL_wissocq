@@ -8,8 +8,9 @@ GLApplication::~GLApplication() {
 }
 
 GLApplication::GLApplication() {
-   initStrip(1,-1.0,1.0,-1.0,1.0);
-   /*
+    initRing(30,0.3,0.6);
+   /*initStrip(30,-.9,.9,-.9,.9);
+
      _trianglePosition = { -0.8,-0.8,0.0, -0.8,0.8,0.0, -0.4,-0.8,0.0, -0.4,0.8,0, 0.0,-0.8,0.0, 0.0,0.8,0.0, 0.4,-0.8,0.0, 0.4,0.8,0.0
 
 
@@ -73,7 +74,7 @@ void GLApplication::initialize() {
   glClearColor(1,1,1,1);
 
   glLineWidth(2.0);
-  glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+  glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
 
   _shader0=initProgram("simple");
@@ -88,11 +89,14 @@ void GLApplication::initialize() {
 
 void GLApplication::initStrip(int nbSlice,float xmin,float xmax,float ymin,float ymax){
     int i;
-    float x,j;
+    float x,j,bleu,vert,variation;
     _trianglePosition.clear();
     _triangleColor.clear();
     x=(xmax-xmin)/nbSlice;
     j=xmin;
+    bleu=1.0;
+    vert=0.0;
+    variation = 1.0/nbSlice;
     for(i=0;i<nbSlice;i++){
 
         _trianglePosition.push_back(j);
@@ -104,8 +108,46 @@ void GLApplication::initStrip(int nbSlice,float xmin,float xmax,float ymin,float
         _trianglePosition.push_back(0.0);
       j=j+x;
 
-         _triangleColor.push_back(1);_triangleColor.push_back(0);_triangleColor.push_back(0);_triangleColor.push_back(1);
-         _triangleColor.push_back(1);_triangleColor.push_back(0);_triangleColor.push_back(0);_triangleColor.push_back(1);
+         _triangleColor.push_back(0);_triangleColor.push_back(vert);_triangleColor.push_back(0);_triangleColor.push_back(1);//bas
+         _triangleColor.push_back(0);_triangleColor.push_back(0);_triangleColor.push_back(bleu);_triangleColor.push_back(1);//haut
+         vert=vert+variation;
+         bleu=bleu-variation;
+
+   }
+}
+
+void GLApplication::initRing(int nbSlice,float r0,float r1){
+    int i;
+    float PI, xint, xext, yint,yext,decalage,teta,variation,vert,bleu;
+    PI=3.14159;
+    _trianglePosition.clear();
+    _triangleColor.clear();
+    decalage=2.0*PI/nbSlice;
+    teta=0;
+    bleu=1.0;
+    vert=0.0;
+    variation = 1.0/nbSlice;
+    for(i=0;i<nbSlice+1;i++){
+        xint=r0*cos(teta);
+        yint=r0*sin(teta);
+        xext=r1*cos(teta);
+        yext=r1*sin(teta);
+        _trianglePosition.push_back(xint);
+        _trianglePosition.push_back(yint);
+        _trianglePosition.push_back(0.0);
+
+        _trianglePosition.push_back(xext);
+        _trianglePosition.push_back(yext);
+        _trianglePosition.push_back(0.0);
+
+
+        teta+=decalage;
+
+        _triangleColor.push_back(0);_triangleColor.push_back(vert);_triangleColor.push_back(0);_triangleColor.push_back(1);//interieur
+        _triangleColor.push_back(0);_triangleColor.push_back(0);_triangleColor.push_back(bleu);_triangleColor.push_back(1);//exterieur
+        vert=vert+variation;
+        bleu=bleu-variation;
+
    }
 }
 
@@ -135,7 +177,7 @@ void GLApplication::draw() {
   glUseProgram(_shader0);
   glBindVertexArray(_triangleVAO);
 
-  glDrawArrays(GL_TRIANGLE_STRIP,0,_trianglePosition.size());
+  glDrawArrays(GL_TRIANGLE_STRIP,0,_trianglePosition.size()/3);
 
   glBindVertexArray(0);
   glUseProgram(0);

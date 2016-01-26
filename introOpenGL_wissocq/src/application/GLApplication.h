@@ -21,6 +21,7 @@ public:
   virtual void draw();
   virtual void resize(int width,int height);
   virtual void initStrip(int nbSlice,float xmin,float xmax,float ymin,float ymax);
+  virtual void initRing(int nbSlice,float r0,float r1);
   /** ***** **/
   virtual void leftPanel(int i, const std::string &s);
   virtual QSize sizeHint() const {return QSize(1000,1000);}
