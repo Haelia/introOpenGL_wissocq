@@ -9,34 +9,13 @@ GLApplication::~GLApplication() {
 
 GLApplication::GLApplication() {
     _bool=false;
-    _coeff=1;
+    _coeff=1.0;
+    //Question 23
     //initRing(30,0.3,0.6);
-   /*initStrip(30,-.9,.9,-.9,.9);
-
-     _trianglePosition = { -0.8,-0.8,0.0, -0.8,0.8,0.0, -0.4,-0.8,0.0, -0.4,0.8,0, 0.0,-0.8,0.0, 0.0,0.8,0.0, 0.4,-0.8,0.0, 0.4,0.8,0.0
-
-
-
-                           //-0.2,0.6,0.0, 0.0,-0.8,0.0, 0.2,0.8,0.0, 0.4,-0.6,0.0, 0.6,0.6,0.0, 0.8,-0.8,0.0
-                         };
-
-
-     _trianglePosition = {
-         -0.8,-0.8,0.0,
-         0.8,0.8,0.0,
-         0.0,0.2,0.0,
-         -0.8,0.8,0.0,
-         0.8,-0.8,0.0,
-         };
-
+    // Question 21
+   //initStrip(30,-.9,.9,-.9,.9);
+   /*
   _trianglePosition = {
-  -0.8,-0.5,0.0, // vertex 0 anciennement vertex 0
-   0.8,0.5,0.0,// 1 anciennement 4
-  -0.5,0.5,0.0, // 2 anciennement 2
-  -0.2,-0.5,0.0, // 3 anciennement 1
-  0.5,-0.5,0.0, // 4 anciennement 5
-  0.2,0.5,0.0 // 5 anciennement 3
-  };
    -0.8,-0.5,0.0, // vertex 0
     -0.2,-0.5,0.0, // 1
     -0.5,0.5,0.0,  // 2
@@ -46,7 +25,35 @@ GLApplication::GLApplication() {
     0.5,-0.5,0.0  // 5
   };
 
-     _triangleColor.clear(); for(unsigned int i=0;i<9;++i) { _triangleColor.push_back(1);_triangleColor.push_back(0);_triangleColor.push_back(0);_triangleColor.push_back(1); }
+
+//Question 12
+  _trianglePosition = {
+  -0.8,-0.5,0.0, // vertex 0 anciennement vertex 0
+   0.8,0.5,0.0,// 1 anciennement 4
+  -0.5,0.5,0.0, // 2 anciennement 2
+  -0.2,-0.5,0.0, // 3 anciennement 1
+  0.5,-0.5,0.0, // 4 anciennement 5
+  0.2,0.5,0.0 // 5 anciennement 3
+  };
+
+//Question 16
+ _trianglePosition = {
+     -0.8,-0.8,0.0,
+     0.8,0.8,0.0,
+     0.0,0.2,0.0,
+     -0.8,0.8,0.0,
+     0.8,-0.8,0.0,
+     };
+
+ //Question 17
+ _trianglePosition = { -0.8,-0.8,0.0, -0.8,0.8,0.0, -0.4,-0.8,0.0, -0.4,0.8,0, 0.0,-0.8,0.0, 0.0,0.8,0.0, 0.4,-0.8,0.0, 0.4,0.8,0.0
+
+
+
+                       //-0.2,0.6,0.0, 0.0,-0.8,0.0, 0.2,0.8,0.0, 0.4,-0.6,0.0, 0.6,0.6,0.0, 0.8,-0.8,0.0
+                     };
+
+ _triangleColor.clear(); for(unsigned int i=0;i<9;++i) { _triangleColor.push_back(1);_triangleColor.push_back(0);_triangleColor.push_back(0);_triangleColor.push_back(1); }
 
 
   _triangleColor = {
@@ -62,6 +69,7 @@ GLApplication::GLApplication() {
       0,3,2,2,1,4
   };
 
+  //Question 25
    _trianglePosition = { // rectangle tracé avec TRIANGLE_STRIP
                          -0.6,-0.8,0, -0.6,0.8,0, 0.6,-0.8,0, 0.6,0.8,0
                        };
@@ -69,10 +77,14 @@ GLApplication::GLApplication() {
                       1,0,0,1, 1,0,0,1, 1,0,0,1, 1,0,0,1,
                     };
    _triangleTexCoord = { // coordonnées de texture en chaque sommet
-                         0,1, 0,0, 1,1, 1,0
+                         //0,1, 0,0, 1,1, 1,0
+                        // 1,0, 1,1, 0,0, 0,1 // roses à gauche
+                        // 0,0, 0,1, 1,0, 1,1// Question 27
+                        //0,0, 0,1, 0.5,0, 0.5,1 //Question 28
                        };
 
-
+   //Question 30
+   initRing(50,0.3,0.6);
 }
 
 
@@ -152,13 +164,26 @@ void GLApplication::initRing(int nbSlice,float r0,float r1){
         _trianglePosition.push_back(0.0);
 
 
-        teta+=decalage;
+
 
         _triangleColor.push_back(0);_triangleColor.push_back(vert);_triangleColor.push_back(0);_triangleColor.push_back(1);//interieur
         _triangleColor.push_back(0);_triangleColor.push_back(0);_triangleColor.push_back(bleu);_triangleColor.push_back(1);//exterieur
         vert=vert+variation;
         bleu=bleu-variation;
 
+
+      /*  //Question 30
+                _triangleTexCoord.push_back(((float)i/(float)nbSlice));
+                _triangleTexCoord.push_back(1);
+                _triangleTexCoord.push_back(((float)i/(float)nbSlice));
+                _triangleTexCoord.push_back(0);*/
+
+        _triangleTexCoord.push_back(((r0*cos(i*-decalage))+1)/2);
+        _triangleTexCoord.push_back(((r0*sin(i*decalage))+1)/2);
+        _triangleTexCoord.push_back(((r1*cos(i*-decalage))+1)/2);
+        _triangleTexCoord.push_back(((r1*sin(i*decalage))+1)/2);
+
+         teta+=decalage;
    }
 }
 
