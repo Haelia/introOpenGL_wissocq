@@ -8,7 +8,9 @@ GLApplication::~GLApplication() {
 }
 
 GLApplication::GLApplication() {
-    initRing(30,0.3,0.6);
+    _bool=false;
+    _coeff=1;
+    //initRing(30,0.3,0.6);
    /*initStrip(30,-.9,.9,-.9,.9);
 
      _trianglePosition = { -0.8,-0.8,0.0, -0.8,0.8,0.0, -0.4,-0.8,0.0, -0.4,0.8,0, 0.0,-0.8,0.0, 0.0,0.8,0.0, 0.4,-0.8,0.0, 0.4,0.8,0.0
@@ -60,6 +62,15 @@ GLApplication::GLApplication() {
       0,3,2,2,1,4
   };
 
+   _trianglePosition = { // rectangle tracé avec TRIANGLE_STRIP
+                         -0.6,-0.8,0, -0.6,0.8,0, 0.6,-0.8,0, 0.6,0.8,0
+                       };
+   _triangleColor = { // tous les sommets en rouge
+                      1,0,0,1, 1,0,0,1, 1,0,0,1, 1,0,0,1,
+                    };
+   _triangleTexCoord = { // coordonnées de texture en chaque sommet
+                         0,1, 0,0, 1,1, 1,0
+                       };
 
 
 }
@@ -165,6 +176,16 @@ void GLApplication::update() {
   // => mettre à jour les données de l'application
   // avant l'affichage de la prochaine image (animation)
   // ...
+    float var=.01;
+    if(_bool)
+    _coeff+=var;
+    else
+        _coeff -= var;
+
+    if (_coeff > 1.)
+            _bool = false;
+    if (_coeff < 0.)
+            _bool = true;
 
 
 }
@@ -175,7 +196,14 @@ void GLApplication::draw() {
   glClear(GL_COLOR_BUFFER_BIT);
 
   glUseProgram(_shader0);
-  glBindVertexArray(_triangleVAO);
+  glBindVertexArray(_triangleVAO);  
+
+  //glUniform1f(glGetUniformLocation(_shader0,"coeff"),_coeff);
+glUniform1f(glGetUniformLocation(_shader0,"coeff"),1);
+glActiveTexture(GL_TEXTURE0); // on travaille avec l'unité de texture 0
+// dans l'instruction suivante, _textureId correspond à l'image "lagoon.jpg"; cf GLApplication::initTexture pour l'initialisation de _textureId
+glBindTexture(GL_TEXTURE_2D,_textureId); // l'unité de texture 0 correspond à la texture _textureId // (le fragment shader manipule des unités de textures et non les identifiants de texture directement)
+glUniform1f(glGetUniformLocation(_shader0,"texture"),0); // on affecte la valeur du sampler2D du fragment shader à l'unité de texture 0.
 
   glDrawArrays(GL_TRIANGLE_STRIP,0,_trianglePosition.size()/3);
 
@@ -253,7 +281,7 @@ GLuint GLApplication::initProgram(const std::string &filename) {
 
   glBindAttribLocation(program,0,"position");
   glBindAttribLocation(program,1,"color");
-
+  glBindAttribLocation(program,2,"texCoord");
 
   glLinkProgram(program);
   glGetProgramiv(program,GL_LINK_STATUS,&ok);
@@ -303,6 +331,11 @@ void GLApplication::initTriangleBuffer() {
   glGenBuffers(1,&_elementBuffer);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_elementBuffer);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER,_elementData.size()*sizeof(unsigned int),_elementData.data(),GL_STATIC_DRAW);
+
+  glGenBuffers(1,&_triangleTexCoordBuffer);
+  glBindBuffer(GL_ARRAY_BUFFER,_triangleTexCoordBuffer);
+  glBufferData(GL_ARRAY_BUFFER,_triangleTexCoord.size()*sizeof(int),_triangleTexCoord.data(),GL_STATIC_DRAW);
+
 }
 
 
@@ -318,8 +351,12 @@ void GLApplication::initTriangleVAO() {
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_elementBuffer);
 
+  glBindBuffer(GL_ARRAY_BUFFER,_triangleTexCoordBuffer);
+  glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,0,0);
+
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
+   glEnableVertexAttribArray(2);
 
 
   glBindVertexArray(0);
